@@ -30,13 +30,20 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
+  bool canRun = millis() - prevClickTime > NEXT_MIN_TIMEOUT_MS;
+
   int val = analogRead(INPUT_ANALOG_PIN);
-  val = map(val, 0, 1023, 0, 50);
-  sevseg.setNumber(val, -1);
+  if (canRun) {
+    val = map(val, 0, 1023, 0, 50);
+    sevseg.setNumber(val, -1);
+  }
+  else {
+    sevseg.setChars("----");
+  }
   sevseg.refreshDisplay(); // Must run repeatedly
   
   btn.loop();
-  if (btn.getVal()==CLICK && (millis() - prevClickTime > NEXT_MIN_TIMEOUT_MS))
+  if (btn.getVal()==CLICK && canRun)
   {
     prevClickTime = millis();
     digitalWrite(RELAY_PIN, HIGH);
